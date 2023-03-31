@@ -9,6 +9,7 @@ const app = express();
 // error handler
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
+const protectRoute = require('./middleware/authentication');
 
 app.use(express.json());
 // extra packages
@@ -19,7 +20,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/jobs', jobRoutes);
+app.use('/api/v1/jobs', protectRoute, jobRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
