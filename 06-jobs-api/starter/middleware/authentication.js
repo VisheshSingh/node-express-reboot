@@ -3,7 +3,6 @@ const { UnauthenticatedError } = require('../errors');
 
 const protectRoute = async (req, res, next) => {
   const authHeader = req.headers.authorization;
-  console.log(authHeader);
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     throw new UnauthenticatedError('No token found!');
   }
@@ -12,7 +11,6 @@ const protectRoute = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
     req.user = { userId: decoded.userId };
     next();
   } catch (error) {
