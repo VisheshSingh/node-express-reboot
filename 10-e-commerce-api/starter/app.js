@@ -1,5 +1,6 @@
 // EXPRESS
 const express = require('express');
+require('express-async-errors'); // FOR HANDLING ASYNC ERRORS
 // ENV VARIABLES
 require('dotenv').config();
 // DB CONNECTION
