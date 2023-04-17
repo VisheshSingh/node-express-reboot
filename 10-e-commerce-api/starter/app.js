@@ -9,16 +9,18 @@ const connectDB = require('./db/connect');
 // ROUTES
 const productRoutes = require('./routes/productRoutes');
 
-const { NotFoundError } = require('./errors');
+const notFoundHandler = require('./middleware/not-found');
 const errorHandler = require('./middleware/error-handler');
 
 const app = express();
 // MIDDLEWARES
 app.use(express.json());
 
-app.use('/api/v1', (req, res) => res.send('E-Commerce API'));
+app.get('/api/v1', (req, res) => {
+  res.send('E-Commerce API');
+});
 app.use('/api/v1/products', productRoutes);
-app.use(NotFoundError);
+app.use(notFoundHandler);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
