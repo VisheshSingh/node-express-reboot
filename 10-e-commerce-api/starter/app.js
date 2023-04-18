@@ -1,6 +1,7 @@
 // EXPRESS
 const express = require('express');
 require('express-async-errors'); // FOR HANDLING ASYNC ERRORS
+const morgan = require('morgan');
 // ENV VARIABLES
 require('dotenv').config();
 // DB CONNECTION
@@ -14,6 +15,7 @@ const errorHandler = require('./middleware/error-handler');
 
 const app = express();
 // MIDDLEWARES
+app.use(morgan('tiny'));
 app.use(express.json());
 
 app.get('/api/v1', (req, res) => {
