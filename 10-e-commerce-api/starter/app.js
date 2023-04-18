@@ -1,5 +1,6 @@
 // EXPRESS
 const express = require('express');
+const colors = require('colors');
 require('express-async-errors'); // FOR HANDLING ASYNC ERRORS
 const morgan = require('morgan');
 // ENV VARIABLES
@@ -32,7 +33,7 @@ const PORT = process.env.PORT || 5000;
 async function start() {
   try {
     await connectDB();
-    app.listen(PORT, console.log(`Server listening to PORT: ${PORT}`));
+    app.listen(PORT, console.log(`Server listening to PORT: ${PORT}`.yellow));
   } catch (error) {
     console.log('Server connection failed');
   }
