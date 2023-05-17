@@ -3,6 +3,7 @@ const express = require('express');
 const colors = require('colors');
 require('express-async-errors'); // FOR HANDLING ASYNC ERRORS
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 // ENV VARIABLES
 require('dotenv').config();
 // DB CONNECTION
@@ -19,8 +20,10 @@ const app = express();
 // MIDDLEWARES
 app.use(morgan('tiny'));
 app.use(express.json());
+app.use(cookieParser());
 
 app.get('/api/v1', (req, res) => {
+  console.log(req.cookies);
   res.send('E-Commerce API');
 });
 app.use('/api/v1/products', productRoutes);
