@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 
 const User = require('../models/User');
-const { BadRequestError } = require('../errors');
+const { BadRequestError, UnauthenticatedError } = require('../errors');
 const attachCookiesToResponse = require('../utils/attachCookiesToResponse');
 
 const register = async (req, res) => {
@@ -19,8 +19,27 @@ const register = async (req, res) => {
   res.status(StatusCodes.CREATED).json({ user: tokenUser });
 };
 
-const login = (req, res) => {
-  res.json({ msg: 'login' });
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new BadRequestError('Email and passwors are required fields!');
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new UnauthenticatedError('User does not exists');
+  }
+  const pwdMatch = await user.comparePassword(password);
+
+  if (!pwdMatch) {
+    throw new UnauthenticatedError('Invalid credentials');
+  }
+
+  const tokenUser = { name: user.name, id: user._id, role: user.role };
+  attachCookiesToResponse(res, tokenUser);
+  res.status(StatusCodes.CREATED).json({ user: tokenUser });
 };
 
 const logout = (req, res) => {

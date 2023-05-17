@@ -40,6 +40,7 @@ UserSchema.pre('save', async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
+// INSTANCE METHOD
 UserSchema.methods.comparePassword = async function (candidatePwd) {
   const isMatch = await bcrypt.compare(candidatePwd, this.password);
   return isMatch;
