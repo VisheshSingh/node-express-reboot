@@ -34,11 +34,11 @@ const updateUser = async (req, res) => {
   }
 
   const updatedUser = await User.findOneAndUpdate(
-    { email },
+    { _id: req.user.id },
     { name },
     { new: true, runValidators: true }
   );
-  console.log({ updatedUser });
+
   const tokenUser = createUserToken(updatedUser);
   attachCookiesToResponse(res, tokenUser);
   res.status(StatusCodes.OK).json({ user: tokenUser });
