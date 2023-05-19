@@ -4,7 +4,6 @@ const User = require('../models/User');
 const { NotFoundError } = require('../errors');
 
 const getAllUsers = async (req, res) => {
-  console.log('req.user', req.user);
   const users = await User.find({ role: 'user' }).select('-password');
   res.status(StatusCodes.OK).json(users);
 };

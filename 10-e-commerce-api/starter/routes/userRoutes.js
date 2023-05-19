@@ -9,9 +9,9 @@ const {
   updatePassword,
 } = require('../controllers/userController');
 const auth = require('../middleware/authentication');
+const authorizeRoutes = require('../middleware/authorization');
 
-router.use(auth);
-router.route('/').get(getAllUsers);
+router.route('/').get(auth, authorizeRoutes('admin'), getAllUsers);
 router.route('/showMe').get(showCurrentUser);
 router.route('/updateUser').patch(updateUser);
 router.route('/updatePassword').patch(updatePassword);
