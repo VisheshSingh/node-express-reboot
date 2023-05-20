@@ -4,6 +4,7 @@ const User = require('../models/User');
 const { NotFoundError, BadRequestError } = require('../errors');
 const attachCookiesToResponse = require('../utils/attachCookiesToResponse');
 const createUserToken = require('../utils/createUserToken');
+const checkPermissions = require('../utils/checkPermissions');
 
 const getAllUsers = async (req, res) => {
   const users = await User.find({ role: 'user' }).select('-password');
@@ -11,13 +12,12 @@ const getAllUsers = async (req, res) => {
 };
 
 const getSingleUser = async (req, res) => {
-  console.log(req.params.id);
   const user = await User.findOne({ _id: req.params.id }).select('-password');
 
   if (!user) {
     throw new NotFoundError(`No user with id: ${req.params.id}`);
   }
-
+  checkPermissions(req.user, user._id);
   res.status(StatusCodes.OK).json(user);
 };
 
