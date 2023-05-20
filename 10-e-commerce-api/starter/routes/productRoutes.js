@@ -8,13 +8,18 @@ const {
   deleteProduct,
   uploadImage,
 } = require('../controllers/productController');
+const authenticateUser = require('../middleware/authentication');
+const authorizeRoutes = require('../middleware/authorization');
 
-router.route('/').post(createProduct).get(getAllProducts);
+router
+  .route('/')
+  .post(authenticateUser, authorizeRoutes('admin'), createProduct)
+  .get(getAllProducts);
 router.route('/upload').post(uploadImage);
 router
   .route('/:id')
   .get(getSingleProduct)
-  .patch(updateProduct)
-  .delete(deleteProduct);
+  .patch(authenticateUser, authorizeRoutes('admin'), updateProduct)
+  .delete(authenticateUser, authorizeRoutes('admin'), deleteProduct);
 
 module.exports = router;
