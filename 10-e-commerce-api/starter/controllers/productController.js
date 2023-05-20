@@ -1,12 +1,10 @@
 const path = require('path');
 const { StatusCodes } = require('http-status-codes');
 const Product = require('../models/Product');
-const checkPermissions = require('../utils/checkPermissions');
 const { NotFoundError, BadRequestError } = require('../errors');
 
 const createProduct = async (req, res) => {
   req.body.user = req.user.id;
-  checkPermissions;
   const product = await Product.create(req.body);
   res.status(StatusCodes.CREATED).json(product);
 };
