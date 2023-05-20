@@ -15,7 +15,9 @@ router
   .route('/')
   .post(authenticateUser, authorizeRoutes('admin'), createProduct)
   .get(getAllProducts);
-router.route('/upload').post(uploadImage);
+router
+  .route('/upload')
+  .post(authenticateUser, authorizeRoutes('admin'), uploadImage);
 router
   .route('/:id')
   .get(getSingleProduct)
