@@ -4,6 +4,7 @@ const colors = require('colors');
 require('express-async-errors'); // FOR HANDLING ASYNC ERRORS
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const fileupload = require('express-fileupload');
 // ENV VARIABLES
 require('dotenv').config();
 // DB CONNECTION
@@ -22,6 +23,8 @@ const app = express();
 app.use(morgan('tiny'));
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
+app.use(express.static('./public'));
+app.use(fileupload());
 
 app.get('/api/v1', (req, res) => {
   console.log(req.signedCookies);
