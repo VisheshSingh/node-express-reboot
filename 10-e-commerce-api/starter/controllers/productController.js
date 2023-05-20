@@ -1,6 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 const Product = require('../models/Product');
 const checkPermissions = require('../utils/checkPermissions');
+const { NotFoundError } = require('../errors');
 
 const createProduct = async (req, res) => {
   req.body.user = req.user.id;
@@ -18,6 +19,9 @@ const getAllProducts = async (req, res) => {
 
 const getSingleProduct = async (req, res) => {
   const product = await Product.findOne({ _id: req.params.id });
+  if (!product) {
+    throw new NotFoundError('Product not found!');
+  }
   res.status(StatusCodes.OK).json(product);
 };
 
@@ -27,10 +31,17 @@ const updateProduct = async (req, res) => {
     req.body,
     { new: true, runValidators: true }
   );
+  if (!updatedProduct) {
+    throw new NotFoundError('Could not update. Product not found!');
+  }
   res.status(StatusCodes.OK).json(updatedProduct);
 };
 
 const deleteProduct = async (req, res) => {
+  const product = await Product.findOne({ _id: req.params.id });
+  if (!product) {
+    throw new NotFoundError('Could not delete. Product not found!');
+  }
   await Product.findOneAndDelete({ _id: req.params.id });
   res.status(StatusCodes.OK).json({ msg: 'Product deleted!' });
 };
