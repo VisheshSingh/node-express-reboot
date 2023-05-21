@@ -64,7 +64,7 @@ const deleteReview = async (req, res) => {
     throw new NotFoundError('Could not delete. No review found with id.');
   }
   checkPermissions(req.user, review.user);
-  await review.deleteOne();
+  await review.remove();
   res.status(StatusCodes.OK).json({ msg: 'Review deleted!' });
 };
 

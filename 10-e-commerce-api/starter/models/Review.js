@@ -35,6 +35,20 @@ const ReviewSchema = new Schema(
 // A user can leave only one review per product
 ReviewSchema.index({ product: 1, user: 1 }, { unique: true });
 
+ReviewSchema.pre('save', async function (next) {
+  await this.constructor.calculateAverageRating(this.product);
+  console.log('Pre save hook ran');
+});
+
+ReviewSchema.pre('remove', async function (next) {
+  await this.constructor.calculateAverageRating(this.product);
+  console.log('Pre remove hook ran');
+});
+
+ReviewSchema.statics.calculateAverageRating = async function (productId) {
+  console.log(productId);
+};
+
 const Review = mongoose.model('Review', ReviewSchema);
 
 module.exports = Review;
