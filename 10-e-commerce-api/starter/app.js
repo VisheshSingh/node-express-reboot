@@ -28,7 +28,6 @@ app.use(express.static('./public'));
 app.use(fileupload());
 
 app.get('/api/v1', (req, res) => {
-  console.log(req.signedCookies);
   res.send('E-Commerce API');
 });
 app.use('/api/v1/products', productRoutes);

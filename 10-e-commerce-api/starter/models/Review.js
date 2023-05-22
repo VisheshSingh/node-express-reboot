@@ -6,7 +6,7 @@ const ReviewSchema = new Schema(
     rating: {
       type: Number,
       required: true,
-      min: 1,
+      min: 0,
       max: 5,
     },
     title: {
@@ -35,6 +35,35 @@ const ReviewSchema = new Schema(
 // A user can leave only one review per product
 ReviewSchema.index({ product: 1, user: 1 }, { unique: true });
 
+ReviewSchema.statics.calculateAverageRating = async function (productId) {
+  console.log('product id:', productId);
+  const result = await this.aggregate([
+    {
+      $match: { product: productId },
+    },
+    {
+      $group: {
+        _id: null,
+        averageRating: { $avg: '$rating' },
+        numOfReviews: { $sum: 1 },
+      },
+    },
+  ]);
+  console.log(result);
+  try {
+    await this.model('Product').findOneAndUpdate(
+      { _id: productId },
+      {
+        averageRating: Math.ceil(result[0]?.averageRating || 0),
+        numOfReviews: result[0]?.numOfReviews || 0,
+      },
+      { new: true }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 ReviewSchema.pre('save', async function (next) {
   await this.constructor.calculateAverageRating(this.product);
   console.log('Pre save hook ran');
@@ -44,10 +73,6 @@ ReviewSchema.pre('remove', async function (next) {
   await this.constructor.calculateAverageRating(this.product);
   console.log('Pre remove hook ran');
 });
-
-ReviewSchema.statics.calculateAverageRating = async function (productId) {
-  console.log(productId);
-};
 
 const Review = mongoose.model('Review', ReviewSchema);
 

@@ -48,7 +48,6 @@ const deleteProduct = async (req, res) => {
 };
 
 const uploadImage = async (req, res) => {
-  console.log(req.files);
   if (!req.files) {
     throw new BadRequestError('Please attach a file to upload');
   }
