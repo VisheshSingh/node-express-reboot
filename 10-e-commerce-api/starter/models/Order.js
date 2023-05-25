@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const SingleCartrItemSchema = new Schema({
+const SingleOrderItemSchema = new Schema({
   name: { type: String, required: true },
   image: { type: String, required: true },
   price: { type: Number, required: true },
@@ -28,7 +28,7 @@ const OrderSchema = new Schema(
       required: true,
     },
     orderItems: {
-      type: [],
+      type: [SingleOrderItemSchema],
     },
     status: {
       type: String,
@@ -46,7 +46,6 @@ const OrderSchema = new Schema(
     },
     paymentId: {
       type: String,
-      required: true,
     },
   },
   { timestamps: true }

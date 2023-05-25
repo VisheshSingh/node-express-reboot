@@ -3,6 +3,11 @@ const Order = require('../models/Order');
 const { NotFoundError, BadRequestError } = require('../errors');
 const Product = require('../models/Product');
 
+const fakeStripeAPI = async ({ amount, currency }) => {
+  const clientSecret = 'someRandomValue';
+  return { clientSecret, amount, currency };
+};
+
 const createOrder = async (req, res) => {
   const { items: cartItems, tax, shippingFee } = req.body;
   if (!cartItems || cartItems.length < 1) {
@@ -28,9 +33,26 @@ const createOrder = async (req, res) => {
     };
     orderItems = [...orderItems, singleOrderItem];
     subtotal += +item.amount * price;
-    console.log({ orderItems, subtotal });
   }
-  res.send('cr');
+  const total = tax + shippingFee + subtotal;
+  const paymentIntent = await fakeStripeAPI({
+    amount: total,
+    currency: 'usd',
+  });
+
+  const order = await Order.create({
+    tax,
+    shippingFee,
+    subtotal,
+    total,
+    orderItems,
+    clientSecret: paymentIntent.clientSecret,
+    user: req.user.id,
+  });
+
+  res
+    .status(StatusCodes.CREATED)
+    .json({ order, clientSecret: order.clientSecret });
 };
 
 const getAllOrders = async (req, res) => {
