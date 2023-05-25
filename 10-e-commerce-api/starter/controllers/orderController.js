@@ -2,6 +2,7 @@ const { StatusCodes } = require('http-status-codes');
 const Order = require('../models/Order');
 const { NotFoundError, BadRequestError } = require('../errors');
 const Product = require('../models/Product');
+const checkPermissions = require('../utils/checkPermissions');
 
 const fakeStripeAPI = async ({ amount, currency }) => {
   const clientSecret = 'someRandomValue';
@@ -56,19 +57,39 @@ const createOrder = async (req, res) => {
 };
 
 const getAllOrders = async (req, res) => {
-  res.status(StatusCodes.OK).json({ msg: 'GET ALL ORDERS' });
+  const orders = await Order.find({});
+  res.status(StatusCodes.OK).json({ orders, count: orders.length });
 };
 
 const getSingleOrder = async (req, res) => {
-  res.status(StatusCodes.OK).json({ msg: 'GET SINGLE ORDER' });
+  const { id } = req.params;
+  const order = await Order.findOne({ _id: id });
+  if (!order) {
+    throw new NotFoundError('Order not found!');
+  }
+  checkPermissions(req.user, order.user);
+  res.status(StatusCodes.OK).json({ order });
 };
 
 const updateOrder = async (req, res) => {
-  res.status(StatusCodes.OK).json({ msg: 'UPDATE ORDER' });
+  const { id } = req.params;
+  const order = await Order.findOne({ _id: id });
+  if (!order) {
+    throw new NotFoundError('Order not found!');
+  }
+  checkPermissions(req.user, order.user);
+  order.paymentId = req.body.paymentId;
+  order.status = 'paid';
+  await order.save();
+  res.status(StatusCodes.OK).json(order);
 };
 
 const getCurrentUserOrders = async (req, res) => {
-  res.status(StatusCodes.OK).json({ msg: 'SHOW ALL MY ORDERS' });
+  const orders = await Order.findOne({ user: req.user.id });
+  if (orders.length === 0) {
+    throw new NotFoundError('We have no orders from you!');
+  }
+  res.status(StatusCodes.OK).json({ orders, count: orders.length });
 };
 
 module.exports = {
